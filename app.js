@@ -1,4 +1,4 @@
-const IMAGE_SRC = "/assets/pool.jpg";
+const IMAGE_SRC = "./assets/pool.jpg";
 const SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
 
 const defaults = {
