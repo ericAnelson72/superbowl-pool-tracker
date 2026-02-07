@@ -21,6 +21,7 @@ const summaryEl = el("summary");
 const poolImage = el("poolImage");
 const highlights = el("highlights");
 const gridOverlay = el("gridOverlay");
+const configPanel = el("configPanel");
 
 let pollTimer = null;
 
@@ -294,6 +295,12 @@ function init() {
   populateForm(config);
   applyGrid(config);
   startPolling(config);
+
+  const params = new URLSearchParams(window.location.search);
+  const isAdmin = params.get("admin") === "1";
+  if (!isAdmin) {
+    configPanel.classList.add("hidden");
+  }
 
   el("apply").addEventListener("click", updateFromForm);
   el("toggleGrid").addEventListener("click", toggleGrid);

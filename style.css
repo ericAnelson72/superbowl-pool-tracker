@@ -90,6 +90,10 @@ body {
   gap: 10px;
 }
 
+.config-panel.hidden {
+  display: none;
+}
+
 button {
   padding: 10px 14px;
   border-radius: 8px;
