@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Super Bowl Pool Live Tracker</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div>
+          <h1>Super Bowl Pool Live Tracker</h1>
+          <p>Live quarter winners highlighted on the grid.</p>
+        </div>
+        <div class="status" id="status">Waiting for configuration…</div>
+      </header>
+
+      <section class="panel">
+        <div class="panel-row">
+          <label>
+            Home Team Abbrev
+            <input id="home" placeholder="KC" />
+          </label>
+          <label>
+            Away Team Abbrev
+            <input id="away" placeholder="SF" />
+          </label>
+          <label>
+            Game Date (YYYYMMDD)
+            <input id="date" placeholder="20260208" />
+          </label>
+          <label>
+            Event ID (optional)
+            <input id="eventId" placeholder="401547467" />
+          </label>
+        </div>
+
+        <div class="panel-row">
+          <label>
+            Top Row Digits (home)
+            <input id="topDigits" placeholder="4,3,7,2,8,6,5,1,0,9" />
+          </label>
+          <label>
+            Left Column Digits (away)
+            <input id="leftDigits" placeholder="7,3,8,2,0,9,4,1,6,5" />
+          </label>
+          <label>
+            Poll Interval (seconds)
+            <input id="interval" placeholder="20" />
+          </label>
+        </div>
+
+        <div class="panel-row">
+          <label>
+            Grid Left (%)
+            <input id="gridX" placeholder="12" />
+          </label>
+          <label>
+            Grid Top (%)
+            <input id="gridY" placeholder="19" />
+          </label>
+          <label>
+            Grid Width (%)
+            <input id="gridW" placeholder="74" />
+          </label>
+          <label>
+            Grid Height (%)
+            <input id="gridH" placeholder="71" />
+          </label>
+        </div>
+
+        <div class="panel-actions">
+          <button id="apply">Apply & Update Link</button>
+          <button id="toggleGrid">Toggle Grid Overlay</button>
+          <button id="share">Copy Share Link</button>
+        </div>
+      </section>
+
+      <section class="board" id="board">
+        <div class="image-wrap">
+          <img id="poolImage" alt="Super Bowl pool" />
+          <div id="gridOverlay" class="grid-overlay hidden"></div>
+          <div id="highlights" class="highlights"></div>
+        </div>
+      </section>
+
+      <section class="panel small">
+        <div id="summary"></div>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
