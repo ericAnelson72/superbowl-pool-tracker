@@ -204,7 +204,11 @@ function renderHighlights(config, data) {
   }
 
   const lines = [];
+  const awayScore = away?.score ?? "-";
+  const homeScore = home?.score ?? "-";
+
   lines.push(`${away.team.displayName} @ ${home.team.displayName}`);
+  lines.push(`Score: ${away.team.displayName} ${awayScore} — ${home.team.displayName} ${homeScore}`);
   lines.push(`Status: ${event.status?.type?.shortDetail || ""}`);
 
   quarters.forEach((qInfo) => {
@@ -227,6 +231,7 @@ function renderHighlights(config, data) {
     lines.push(`Q${qInfo.quarter}: ${awayDigit}-${homeDigit}`);
   });
 
+  lines.push(`Last updated: ${new Date().toLocaleString()}`);
   setSummary(lines);
   setStatus(
     isFinal
