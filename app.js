@@ -11,7 +11,7 @@ const defaults = {
   topDigits: "4,3,7,2,8,6,5,1,0,9",
   leftDigits: "7,3,8,2,0,9,4,1,6,5",
   interval: "20",
-  gridX: "12",
+  gridX: "16",
   gridY: "19",
   gridW: "74",
   gridH: "71",
