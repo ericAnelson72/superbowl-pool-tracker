@@ -15,7 +15,7 @@ const defaults = {
   gridY: "19",
   gridW: "74",
   gridH: "71",
-  swapDigits: "0",
+  swapDigits: "1",
 };
 
 const el = (id) => document.getElementById(id);
