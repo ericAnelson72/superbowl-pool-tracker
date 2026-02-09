@@ -189,15 +189,15 @@ function getQuarterTotals(event, config) {
   const leftLines = leftTeam?.linescores || [];
 
   const period = competition.status?.period || 0;
-  const isFinal = competition.status?.type?.completed;
+  const statusType = competition.status?.type;
+  const statusTypeName = statusType?.name || "";
+  const statusDetail = statusType?.detail || statusType?.shortDetail || "";
+  const isFinal = statusType?.completed;
+  const atHalftime =
+    statusTypeName.includes("HALFTIME") || statusDetail.toUpperCase().includes("HALFTIME");
 
   const quarters = [1, 2, 3, 4].map((q) => {
-    const hasLines =
-      topLines.length >= q &&
-      leftLines.length >= q &&
-      topLines[q - 1]?.value !== undefined &&
-      leftLines[q - 1]?.value !== undefined;
-    const available = isFinal || hasLines || period > q;
+    const available = isFinal || q < period || (atHalftime && q === 2);
     return {
       quarter: q,
       available,
@@ -248,6 +248,7 @@ function renderHighlights(config, data) {
     );
   }
   lines.push(`Status: ${event.status?.type?.shortDetail || ""}`);
+  lines.push(`Period: ${period}`);
 
   quarters.forEach((qInfo) => {
     if (!qInfo.available) {
