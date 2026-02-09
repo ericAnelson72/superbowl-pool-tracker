@@ -77,6 +77,20 @@ body {
   letter-spacing: 0.04em;
 }
 
+.panel label.checkbox {
+  align-items: center;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 10px;
+  text-transform: none;
+  font-size: 13px;
+}
+
+.panel label.checkbox input {
+  width: 16px;
+  height: 16px;
+}
+
 .panel input {
   padding: 8px 10px;
   border-radius: 8px;

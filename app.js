@@ -13,6 +13,7 @@ const defaults = {
   gridY: "19",
   gridW: "74",
   gridH: "71",
+  swapDigits: "0",
 };
 
 const el = (id) => document.getElementById(id);
@@ -51,6 +52,7 @@ function readConfig() {
     gridY: params.get("gridY") || defaults.gridY,
     gridW: params.get("gridW") || defaults.gridW,
     gridH: params.get("gridH") || defaults.gridH,
+    swapDigits: params.get("swapDigits") || defaults.swapDigits,
   };
 }
 
@@ -66,6 +68,7 @@ function populateForm(config) {
   el("gridY").value = config.gridY;
   el("gridW").value = config.gridW;
   el("gridH").value = config.gridH;
+  el("swapDigits").checked = config.swapDigits === "1";
 }
 
 function writeConfigToUrl(config) {
@@ -218,8 +221,11 @@ function renderHighlights(config, data) {
     }
     const homeDigit = qInfo.homeTotal % 10;
     const awayDigit = qInfo.awayTotal % 10;
-    const row = leftDigits.indexOf(awayDigit);
-    const col = topDigits.indexOf(homeDigit);
+    const swap = config.swapDigits === "1";
+    const rowDigit = swap ? homeDigit : awayDigit;
+    const colDigit = swap ? awayDigit : homeDigit;
+    const row = leftDigits.indexOf(rowDigit);
+    const col = topDigits.indexOf(colDigit);
 
     if (row === -1 || col === -1) {
       lines.push(`Q${qInfo.quarter}: digits not found`);
@@ -262,6 +268,7 @@ function getConfigFromForm() {
     gridY: el("gridY").value.trim(),
     gridW: el("gridW").value.trim(),
     gridH: el("gridH").value.trim(),
+    swapDigits: el("swapDigits").checked ? "1" : "0",
   };
 }
 
