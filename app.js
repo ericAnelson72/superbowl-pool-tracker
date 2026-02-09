@@ -192,7 +192,12 @@ function getQuarterTotals(event, config) {
   const isFinal = competition.status?.type?.completed;
 
   const quarters = [1, 2, 3, 4].map((q) => {
-    const available = isFinal || period > q;
+    const hasLines =
+      topLines.length >= q &&
+      leftLines.length >= q &&
+      topLines[q - 1]?.value !== undefined &&
+      leftLines[q - 1]?.value !== undefined;
+    const available = isFinal || hasLines || period > q;
     return {
       quarter: q,
       available,
