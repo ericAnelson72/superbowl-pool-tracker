@@ -4,6 +4,8 @@ const SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/n
 const defaults = {
   home: "SEA",
   away: "NE",
+  topTeam: "SEA",
+  leftTeam: "NE",
   date: "20260208",
   eventId: "",
   topDigits: "4,3,7,2,8,6,5,1,0,9",
@@ -43,6 +45,8 @@ function readConfig() {
   return {
     home: params.get("home") || defaults.home,
     away: params.get("away") || defaults.away,
+    topTeam: params.get("topTeam") || defaults.topTeam,
+    leftTeam: params.get("leftTeam") || defaults.leftTeam,
     date: params.get("date") || defaults.date,
     eventId: params.get("eventId") || defaults.eventId,
     topDigits: params.get("topDigits") || defaults.topDigits,
@@ -59,6 +63,8 @@ function readConfig() {
 function populateForm(config) {
   el("home").value = config.home;
   el("away").value = config.away;
+  el("topTeam").value = config.topTeam;
+  el("leftTeam").value = config.leftTeam;
   el("date").value = config.date;
   el("eventId").value = config.eventId;
   el("topDigits").value = config.topDigits;
@@ -162,15 +168,25 @@ function sumLinescores(linescores, quarter) {
   return linescores.slice(0, quarter).reduce((sum, item) => sum + Number(item.value || 0), 0);
 }
 
-function getQuarterTotals(event) {
+function getQuarterTotals(event, config) {
   const competition = event.competitions[0];
   const competitors = competition.competitors;
 
   const home = competitors.find((c) => c.homeAway === "home");
   const away = competitors.find((c) => c.homeAway === "away");
 
-  const homeLines = home?.linescores || [];
-  const awayLines = away?.linescores || [];
+  const topAbbrev = (config.topTeam || config.home || "").toUpperCase();
+  const leftAbbrev = (config.leftTeam || config.away || "").toUpperCase();
+
+  const topTeam = competitors.find(
+    (c) => c.team?.abbreviation?.toUpperCase() === topAbbrev
+  );
+  const leftTeam = competitors.find(
+    (c) => c.team?.abbreviation?.toUpperCase() === leftAbbrev
+  );
+
+  const topLines = topTeam?.linescores || [];
+  const leftLines = leftTeam?.linescores || [];
 
   const period = competition.status?.period || 0;
   const isFinal = competition.status?.type?.completed;
@@ -180,12 +196,12 @@ function getQuarterTotals(event) {
     return {
       quarter: q,
       available,
-      homeTotal: available ? sumLinescores(homeLines, q) : null,
-      awayTotal: available ? sumLinescores(awayLines, q) : null,
+      topTotal: available ? sumLinescores(topLines, q) : null,
+      leftTotal: available ? sumLinescores(leftLines, q) : null,
     };
   });
 
-  return { quarters, home, away, period, isFinal };
+  return { quarters, home, away, topTeam, leftTeam, period, isFinal };
 }
 
 function renderHighlights(config, data) {
@@ -197,7 +213,14 @@ function renderHighlights(config, data) {
     return;
   }
 
-  const { quarters, home, away, period, isFinal } = getQuarterTotals(event);
+  const { quarters, home, away, topTeam, leftTeam, period, isFinal } = getQuarterTotals(
+    event,
+    config
+  );
+  if (!topTeam || !leftTeam) {
+    setStatus("Grid teams not found. Check Top/Left team abbreviations.");
+    return;
+  }
 
   const topDigits = parseDigits(config.topDigits);
   const leftDigits = parseDigits(config.leftDigits);
@@ -209,9 +232,16 @@ function renderHighlights(config, data) {
   const lines = [];
   const awayScore = away?.score ?? "-";
   const homeScore = home?.score ?? "-";
+  const topScore = topTeam?.score ?? "-";
+  const leftScore = leftTeam?.score ?? "-";
 
   lines.push(`${away.team.displayName} @ ${home.team.displayName}`);
   lines.push(`Score: ${away.team.displayName} ${awayScore} — ${home.team.displayName} ${homeScore}`);
+  if (topTeam && leftTeam) {
+    lines.push(
+      `Grid teams: ${leftTeam.team.displayName} ${leftScore} — ${topTeam.team.displayName} ${topScore}`
+    );
+  }
   lines.push(`Status: ${event.status?.type?.shortDetail || ""}`);
 
   quarters.forEach((qInfo) => {
@@ -219,11 +249,11 @@ function renderHighlights(config, data) {
       lines.push(`Q${qInfo.quarter}: in progress`);
       return;
     }
-    const homeDigit = qInfo.homeTotal % 10;
-    const awayDigit = qInfo.awayTotal % 10;
+    const topDigit = qInfo.topTotal % 10;
+    const leftDigit = qInfo.leftTotal % 10;
     const swap = config.swapDigits === "1";
-    const rowDigit = swap ? homeDigit : awayDigit;
-    const colDigit = swap ? awayDigit : homeDigit;
+    const rowDigit = swap ? topDigit : leftDigit;
+    const colDigit = swap ? leftDigit : topDigit;
     const row = leftDigits.indexOf(rowDigit);
     const col = topDigits.indexOf(colDigit);
 
@@ -232,9 +262,9 @@ function renderHighlights(config, data) {
       return;
     }
 
-    const label = `Q${qInfo.quarter} ${awayDigit}-${homeDigit}`;
+    const label = `Q${qInfo.quarter} ${leftDigit}-${topDigit}`;
     highlightCell(config, row, col, label, qInfo.quarter === 4);
-    lines.push(`Q${qInfo.quarter}: ${awayDigit}-${homeDigit}`);
+    lines.push(`Q${qInfo.quarter}: ${leftDigit}-${topDigit}`);
   });
 
   lines.push(`Last updated: ${new Date().toLocaleString()}`);
@@ -259,6 +289,8 @@ function getConfigFromForm() {
   return {
     home: el("home").value.trim(),
     away: el("away").value.trim(),
+    topTeam: el("topTeam").value.trim(),
+    leftTeam: el("leftTeam").value.trim(),
     date: el("date").value.trim(),
     eventId: el("eventId").value.trim(),
     topDigits: el("topDigits").value.trim(),
